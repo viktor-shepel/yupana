@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS += -g -Wall -std=c99 -MMD -MP -DDEBUG -fPIC
+CFLAGS += -g -Wall -std=c99 -MMD -MP
 
 LINK = gcc
 LINKFLAGS = -g
