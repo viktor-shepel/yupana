@@ -1,10 +1,11 @@
+[![Build Status](https://travis-ci.org/viktor-shepel/yupana.svg?branch=master)](https://travis-ci.org/viktor-shepel/yupana)
 ## Overview
 Yupana is a C library that evaluates arithmetic expression.
 
 ## Features
 * single header/source file
 * C99 standard compliant
-* zero external dependecies
+* zero external dependencies
 * thread safe
 
 ## Getting Started
@@ -17,33 +18,18 @@ git clone https://github.com/viktor-shepel/yupana.git
 2. create `main.c` file with next content
 ```c
 #include <yupana.h>
-#include <assert.h>
 #include <stdio.h>
 
 int main() {
-  optional_number_t number_1 = eval("1 + 2 / 5");
-  if (number_1.valid) {
-    printf("eval(\"1 + 2 / 5\") == %g\n", number_1.value);
-  }
-  
-  optional_number_t number_2 = eval("1 + 2 / zero");
-  if (!number_2.valid) {
-    eval_error_t error = number_2.error;
-    printf("eval(\"1 + 2 / zero\") == failure\n");
-    printf("  |\n");
-    printf("  +--- reason: %s\n", error.description);    
-    printf("  |\n");
-    printf("  +--- place: %s\n", error.context);   
-  }
-  
-  const char* expression = "1 + 2 / zero";
-  optional_number_t number_3 = eval(expression);
-  assert(number_3.error.context == &expression[8]);  
+  const char* expression = "1 + 2 / 5";
+  optional_number_t number = eval(expression);
+
+  printf("eval(\"%s\") == %g\n", expression, number.value);
   
   return 0;
 }
 ```
-3. compile project.
+3. compile project
 ```bash
 gcc -Wall -std=c99 -c yupana/src/yupana.c -o yupana.o
 gcc -Wall -std=c99 -I yupana/src/ -c main.c -o main.o
@@ -53,11 +39,6 @@ gcc main.o yupana.o -o main
 ```bash
 ./main
 eval("1 + 2 / 5") == 1.4
-eval("1 + 2 / zero") == failure
-  |
-  +--- reason: addition operator has malformed arguments
-  |
-  +--- place: zero
 ```
 5. have fun :smiley:
 ## Documentation
@@ -69,21 +50,21 @@ typedef struct {
   const char* context;
 } eval_error_t;
 ```
-Is a data structure that represents evaluation error. It maintains human readable description of error and place of it's origin as `description`/`context` fields respectivelly.
+Is a data structure that represents evaluation error. It maintains human readable description of error and place of it's origin as `description`/`context` fields respectively.
 ```c
 const char* expression = "2 / :five:";
 eval_error_t error = eval(expression).error;
 
-strcmp(error.description, "division operator has malformed arguments") == 0; // true
-error.context == &expression[3]; // true
+error.description; // points to string "division operator has malformed arguments"
+error.context == &expression[4]; // true
 
 /*
  *  Graphical interpretaton of error context
  *
  *  eval_error_t erro = eval("2 / :five:").error;
- *                               ^
- *                               |
- *  error.context  --------------+
+ *                                ^
+ *                                |
+ *  error.context  ---------------+
  */
 
 ```
@@ -96,7 +77,9 @@ typedef struct {
 } optional_number_t;
 ```
 Is a data structure that represents evaluation that might fail.
+
 Valid number represented as `{ .valid = true, .value = <actual value>, .erro = { NULL, NULL } }`.
+
 Invalid number represented as `{ .valid = false, .value = NaN, .error = <computation flaw> }`.
 ```c
 optional_number_t number = eval("2 + (8 / 4)");
@@ -109,7 +92,7 @@ number.error.context == NULL;
 
 optional_number_t number = eval("2 + (8 / /)");
 number.valid == false;
-number.value == NAN; // don't compare in such way, it is implementaion specific
+number.value == NAN; // don't compare in such way, it is implementation specific
 number.error.description != NULL;
 number.error.context != NULL;
 ```
@@ -117,7 +100,7 @@ number.error.context != NULL;
 ```c
 optional_number_t eval(const char* expression);
 ```
-Is a function that evaluates text with arithmeic expression `expression`. It returns optional number with encapsulated double precision value for well formed expression, and error for malformed one.
+Is a function that evaluates text with arithmetic expression `expression`. It returns optional number wich encapsulates double precision value for well formed expression or error for malformed one.
 ```c
 optional_number_t number = eval("0.1 + 0.2");
 number.valid == true;
@@ -125,7 +108,7 @@ number.value == 0.3;
 
 optional_number_t number = eval("NaN");
 number.valid == true;
-number.value == NAN; // if your platform supports it
+number.value == NAN; // if your platform supports NAN
 
 optional_number_t number = eval("一 + 三");
 number.valid == false;
@@ -136,4 +119,14 @@ number.valid == false;
 number.value == NAN; // same as above unless it runs on scholar pc
 ```
 ## Examples
-WIP
+navigate to `yupana` folder and build examples (play with/explore it)
+```bash
+cd yupana
+make
+```
+
+`repl` - for interactive exploration
+
+![repl](https://raw.githubusercontent.com/viktor-shepel/yupana/master/examples/repl.gif)
+`calc` - as pipe command
+<img alt="calc" src="https://raw.githubusercontent.com/viktor-shepel/yupana/master/examples/calc.gif" height="500px" width="100%">
