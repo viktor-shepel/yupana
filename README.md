@@ -21,10 +21,9 @@ git clone https://github.com/viktor-shepel/yupana.git
 #include <stdio.h>
 
 int main() {
-  const char* expression = "1 + 2 / 5";
-  optional_number_t number = eval(expression);
+  optional_number_t number = eval("1 + 2 / 5");
 
-  printf("eval(\"%s\") == %g\n", expression, number.value);
+  printf("eval(\"1 + 2 / 5\") == %g\n", number.value);
   
   return 0;
 }
